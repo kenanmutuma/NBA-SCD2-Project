@@ -24,6 +24,17 @@ NBA_DATA_WAREHOUSE.DW.DIM_NBA_PLAYERS
 - **STAGING** contains the latest record for each player.
 - **DW** contains historical player versions for reporting and analysis.
 
+## One-time Snowflake setup
+
+Before running the Python pipeline, execute `sql/nba_project_setup.sql` in a Snowflake worksheet. It creates:
+
+- `NBA_DATA_WAREHOUSE` database
+- `RAW`, `STAGING`, and `DW` schemas
+- `RAW.NBA_PLAYERS_API` table
+- `DW.DIM_NBA_PLAYERS` table
+
+The setup script also requires access to the `COMPUTE_WH` warehouse. Run the script once; the pipeline scripts can then be rerun safely.
+
 ## Project structure
 
 ```text
@@ -120,6 +131,10 @@ The runner performs these steps:
 4. Runs the SCD2 transformation.
 5. Commits valid changes and rolls back if an error occurs.
 
+`run_pipeline.py` is the automated orchestration script. It does not yet run automatically on a timer. Scheduling can be added later with Windows Task Scheduler or a Snowflake Task.
+
+The RAW table is append-oriented: repeated runs add source records and preserve extraction history. STAGING contains only the latest record for each player, while the DIMENSION table retains SCD2 history.
+
 ## API pagination and throttling
 
 The extractor uses cursor pagination with up to 100 players per request. It checks the API response for `next_cursor` until no further cursor is available.
@@ -151,6 +166,10 @@ SELECT
     COUNT(DISTINCT PLAYER_ID) AS DISTINCT_PLAYERS
 FROM NBA_DATA_WAREHOUSE.DW.DIM_NBA_PLAYERS;
 ```
+
+**Validation result:**
+
+![Snowflake dimension validation showing 7,513 total rows, current rows, and distinct players](docs/validation.png)
 
 ### Exactly one current row per player
 
