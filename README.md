@@ -224,6 +224,17 @@ SELECT
     (SELECT COUNT(*) FROM NBA_DATA_WAREHOUSE.DW.DIM_NBA_PLAYERS) AS DIMENSION_ROWS;
 ```
 
+## Submission evidence
+
+The `results/` and `docs/` folders contain evidence from the final Snowflake validation:
+
+- `results/validation_summary.csv` — 7,513 total, current, and distinct players.
+- `results/current_players.csv` — all 7,513 current player dimension records.
+- `results/player_history_sample.csv` — a 25-row representative SCD2 history sample.
+- `docs/validation.png` — Snowflake screenshot of the dimension summary.
+
+These files demonstrate the final warehouse result without requiring submission of Snowflake credentials or warehouse access.
+
 ## Troubleshooting
 
 ### Missing Snowflake module
